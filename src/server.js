@@ -1,7 +1,11 @@
 const express = require('express');
 const routes = require('./routes/controllers');
+const databaseService = require('./services/database');
 const bodyParser = require('body-parser');
-require('./database/index')
+const SerialPort = require('serialport');
+const xbee_api = require('xbee-api');
+
+require('./database/index');
 
 const app = express();
 
@@ -24,6 +28,40 @@ server.listen(process.env.PORT || 2004, () => {
     console.log('Servidor On!')
 }); 
 
+setInterval(async () => {
+    try {
+      const {user, truck, position} = await databaseService.getLocal();
+      await databaseService.sendGlobal(user, truck, position);
+    } catch (err) {
+      console.log(err);
+    }
+  }, 30000);
+
+io.on('connection', (socket) => { // Toda vez que um novo cliente se conectar ao nosso socket o que será feito?
+    console.log(`Socket conectado: ${socket.id}`); // imprime a mensagem com o id de quem conectou
+
+    socket.on('disconnect', (socket) => {
+        console.log('Socket desconectado.');
+    });
+
+    socket.on('controle-autonomo', (data) => {
+        console.log("Controle Autônomo");
+        console.log(data);
+        var frame = {
+            type: C.FRAME_TYPE.TX_REQUEST_64,
+            destination64: "000000000000FFFF",
+            options: 0x00, // optional, 0x00 is default
+            data: data 
+        };
+    
+        serialport.write(xbeeAPI.buildFrame(frame), function (err, res) {
+            if (err) return (err);
+            else console.log("written bytes: ", frame);
+        });
+    });
+});
+
+    // Comunicação Serial - XBee
 
 /*
 // Esse trecho é a comunicação com a porta serial

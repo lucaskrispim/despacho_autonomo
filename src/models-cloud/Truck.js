@@ -1,5 +1,5 @@
 const {Model,DataTypes} = require('sequelize');
-const { STRING, BOOLEAN } = require('sequelize');
+const { STRING } = require('sequelize');
 
 class Truck extends Model{
     static init(connection){

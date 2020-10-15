@@ -6,7 +6,6 @@ module.exports = {
       id: {
         type: Sequelize.UUID,
         primaryKey: true,
-        defaultValue: Sequelize.literal('uuid_generate_v4()'),
         allowNull: false,
       },
       name: {
@@ -30,6 +29,10 @@ module.exports = {
         allowNull: false,
       },
       adm:{
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+      },
+      cloud:{
         type: Sequelize.BOOLEAN,
         allowNull: false,
       },

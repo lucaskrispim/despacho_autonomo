@@ -4,7 +4,7 @@ const { STRING, BOOLEAN, UUIDV4 } = require('sequelize');
 class User extends Model{
     static init(connection){
         super.init({
-            id:{type:DataTypes.UUIDV4, primaryKey:true, field:'id', defaultValue:DataTypes.UUIDV4 },
+            id:{ type:DataTypes.UUIDV4, primaryKey:true, field:'id', defaultValue:DataTypes.UUIDV4 },
             name:DataTypes.STRING,
             username:DataTypes.STRING,
             password:DataTypes.STRING,

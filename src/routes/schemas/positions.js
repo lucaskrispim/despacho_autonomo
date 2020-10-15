@@ -18,7 +18,8 @@ const position = {
         min:1,
         max:15
       }
-    }
+    },
+    errorMessage: 'Campo latitude inválido!',
   },
   longitude:{
     in: 'body',
@@ -28,7 +29,8 @@ const position = {
         min:1,
         max:15,
       }
-    }
+    },
+    errorMessage: 'Campo longitude inválido!',
   }
 }
 

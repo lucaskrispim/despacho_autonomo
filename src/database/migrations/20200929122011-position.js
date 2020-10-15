@@ -6,7 +6,6 @@ module.exports = {
       id: {
         type: Sequelize.UUID,
         primaryKey: true,
-        defaultValue: Sequelize.literal('uuid_generate_v4()'),
         allowNull: false,
       },
       truck_id: {
@@ -26,6 +25,10 @@ module.exports = {
       },
       longitude: {
         type: Sequelize.FLOAT,
+        allowNull: false,
+      },
+      cloud:{
+        type: Sequelize.BOOLEAN,
         allowNull: false,
       },
       created_at: {

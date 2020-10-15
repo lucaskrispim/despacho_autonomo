@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const UserCloud = require('../models-cloud/User');
 const authService = require('./auth');
 
 const privateKey = fs.readFileSync(path.resolve(__dirname, '../../secret.key.pem'));
@@ -66,7 +67,7 @@ class UserService {
     try {
       const actor = await User.findOne({ where: { "username": body.username } });
       if (actor) {
-        return { 'msg': 'Este username já está em uso!' };;
+        return { 'msg': 'Este username já está em uso na base de dados local!' };
       } else {
         const { name, username, password, email, adm } = body;
         const salt = bcrypt.genSaltSync(15);
@@ -78,9 +79,11 @@ class UserService {
           salt: salt,
           email: email,
           adm: adm,
+          cloud: false
         });
         return user;
       }
+
     } catch (err) {
       return err;
     }
@@ -93,7 +96,6 @@ class UserService {
         const { name, username, password, email, adm } = body;
         const salt = bcrypt.genSaltSync(15);
         const pass = bcrypt.hashSync(password, salt)
-
         await User.update({
           name: name,
           username: username,
@@ -102,8 +104,8 @@ class UserService {
           email: email,
           adm: adm === 'true' ? true : false,
         }, { where: { "id": body.id } });
-        const retorno = await User.findOne({ where: { "id": body.id } });
-        return retorno;
+        const user = await User.findOne({ where: { "id": body.id } });
+        return user;
       } else {
         return { 'msg': 'Este usuário não existe!' };
       }
@@ -111,6 +113,35 @@ class UserService {
       return err;
     }
   }
+
+  static async getAll() {
+    try {
+      const user = await User.findAll({ raw: true, where: { "cloud": false } });
+      return user;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  static async send(users) {
+    try {
+      const user = await UserCloud.bulkCreate(users);
+      return user;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  static async modify(users) {
+    try {
+      for (let i = 0; i < users.length; i++) {
+        await User.update({ cloud: true }, { where: { "id": users[i].id } });
+      }
+    } catch (error) {
+      return error;
+    }
+  }
+
 }
 
 module.exports = UserService;

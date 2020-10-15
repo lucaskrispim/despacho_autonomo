@@ -6,11 +6,14 @@ module.exports = {
       id: {
         type: Sequelize.UUID,
         primaryKey: true,
-        defaultValue: Sequelize.literal('uuid_generate_v4()'),
         allowNull: false,
       },
       placa: {
         type: Sequelize.STRING,
+        allowNull: false,
+      },
+      cloud:{
+        type: Sequelize.BOOLEAN,
         allowNull: false,
       },
       created_at: {
