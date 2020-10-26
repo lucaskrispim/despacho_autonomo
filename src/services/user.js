@@ -1,34 +1,17 @@
 const bcrypt = require('bcrypt');
-const fs = require('fs');
-const path = require('path');
-const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const UserCloud = require('../models-cloud/User');
 const authService = require('./auth');
 
-const privateKey = fs.readFileSync(path.resolve(__dirname, '../../secret.key.pem'));
-
-const parseCookies = (req) => {
-  var list = {},
-    rc = req.headers.cookie;
-  rc && rc.split(';').forEach(function (cookie) {
-    var parts = cookie.split('=');
-    list[parts.shift().trim()] = decodeURI(parts.join('='));
-  });
-  return list;
-}
-
 const sessionVerify = (req) => {
-  const cookie = parseCookies(req);
   try {
-    const verify = jwt.verify(cookie.token, privateKey, { algorithms: ['RS256'] });
-    const token = authService.getToken({ 'name': verify.name, 'username': verify.username, 'id': verify.id });
-    return { 'flag': true, 'name': verify.name, 'msg': 'OK!', 'token': token };
+    const verify = authService.decodeToken(req);
+    const token = authService.getToken(verify);
+    return { 'flag': verify.flag, 'name': verify.name, 'adm': verify.adm, 'msg': 'OK!', 'token': token };
   } catch (error) {
-    return { 'flag': false, 'name': 'ninguém', 'msg': 'A sessão foi encerrada! Token expirou 0!', 'token': ' ' };
+    return { 'flag': false, 'name': 'ninguém', 'msg': 'A sessão foi encerrada! Token expirou!', 'token': ' ' };
   }
 }
-
 
 class UserService {
   static async verifyUser(req) {
@@ -48,18 +31,16 @@ class UserService {
       } catch (err) {
         return { 'flag': false, 'name': 'ninguém', 'msg': 'Tente novamente mais tarde!' }
       }
+    } else if (sessionVerify(req).flag) {
+      console.log(sessionVerify(req));
+      return sessionVerify(req);
     } else if (!req.body.username && req.body.password) {
       return { 'flag': false, 'name': 'ninguém', 'msg': 'O campo usuário deve ser preenchido!' }
     } else if (!req.body.password && req.body.username) {
       return { 'flag': false, 'name': 'ninguém', 'msg': 'O campo senha deve ser preenchido!' }
     } else if (!req.body.password && !req.body.username) {
+      console.log(sessionVerify(req));
       return { 'flag': false, 'name': 'ninguém', 'msg': 'O campo usuário e senha devem ser preenchidos!' }
-    } else {
-      if (sessionVerify(req).flag) {
-        return sessionVerify(req);
-      } else {
-        return { 'flag': false, 'name': 'ninguém', 'msg': 'A sessão foi encerrada! Token expirou 1!', 'token': ' ' };
-      }
     }
   }
 
@@ -102,7 +83,7 @@ class UserService {
           password: pass,
           salt: salt,
           email: email,
-          adm: adm === 'true' ? true : false,
+          adm: adm,
         }, { where: { "id": body.id } });
         const user = await User.findOne({ where: { "id": body.id } });
         return user;

@@ -12,6 +12,15 @@ class PositionService {
     }
   }
 
+  static async getByTruck(placa) {
+    try {
+      const position = await Position.findAll({ raw: true, where: { "placa": placa } });
+      return position;
+    } catch (error) {
+      return error;
+    }
+  }
+
   static async create(body) {
     try {
       const truck = await Truck.findOne({ where: { "placa": body.placa } });
