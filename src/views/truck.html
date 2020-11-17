@@ -143,16 +143,13 @@
 
           <!-- Content Row -->
           <div class="row">
-            <div class="col-xl-4 col-md-6 mb-4">
+            <div class="col-xl-2 col-md-6 mb-4">
               <button type="button" class="btn btn-light btn-block d-flex justify-content-center">
                 <div class="font-weight-bold" style="font-size:larger;"> <%= truck%>
                 </div>
                 <span class="dotverde ml-2 mr-2"></span>
                 <div class="ml-2 mr-2">
                   <img src="/static/img/signal-strength3.svg" alt="sinal" style="max-width: 25px;" />
-                </div>
-                <div class="ml-2 mr-2">
-                  | EH-4012 DEP. SUL
                 </div>
               </button>
             </div>
@@ -163,18 +160,23 @@
               </button>
             </div>
             <div class="col-xl-2 col-md-6 mb-4">
-              <button type="button" class="btn btn-outline-warning btn-block">
+              <button type="button" class="btn btn-outline-warning btn-block" onclick="pararMissao()">
                 <div id="pararMissaoBtn" class="font-weight-bold" style="font-size:larger;">Parar missão</div>
               </button>
             </div>
             <div class="col-xl-2 col-md-6 mb-4">
-              <button type="button" class="btn btn-outline-danger btn-block">
-                <div id="emergenciaBtn" class="font-weight-bold" style="font-size:larger;">Emergência</div>
+              <button type="button" class="btn btn-outline-danger btn-block" onclick="voltar()">
+                <div id="emergenciaBtn" class="font-weight-bold" style="font-size:larger;">Emergência/Voltar</div>
               </button>
             </div>
             <div class="col-xl-2 col-md-6 mb-4">
               <button type="button" class="btn btn-outline-dark btn-block">
                 <div id="buzinaBtn" class="font-weight-bold" style="font-size:larger;">Buzina</div>
+              </button>
+            </div>
+            <div class="col-xl-2 col-md-6 mb-4">
+              <button type="button" class="btn btn-outline-info btn-block">
+                <div id="changeDt" class="font-weight-bold" style="font-size:larger;" data-toggle="modal" data-target="#modalDt" >Alterar DT</div>
               </button>
             </div>
             <% } %>
@@ -185,6 +187,9 @@
             <!-- Area Chart -->
             <div class="col-xs-12  col-sm-12 col-md-9 col-lg-9">
               <div class="card shadow mb-1">
+                <div class="card-header py-3 text-center">
+                  <h5 class="m-0 font-weight-bold text-success">EH-4012 DEP.SUL</h5>
+                </div>
                 <!-- Card Body -->
                 <div class="card-body">
                   <div class="chart-area">
@@ -197,7 +202,79 @@
 
 
               <div class="row mb-4">
-                <div class="col-xs-12  col-sm-12 col-md-3 col-lg-3">
+                <div class="col-xs-12  col-sm-12 col-md-3 col-lg-3" style="font-size:larger;">
+
+                  <!-- Project Card Example -->
+                  <div class="card shadow ">
+                    <div class="card-header py-3 text-center">
+                      <h5 class="m-0 font-weight-bold text-success">Status do veículo</h5>
+                    </div>
+                    <div class="card-body">
+                      <table class="table table-borderless text-center m-0">
+                        <tr>
+                          <td>
+                            <h4 class="small font-weight-bold m-0">Status báscula: </h4>
+                            <div id="statusBasc" class="small font-weight-bold m-0"></div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <h4 class="small font-weight-bold m-0">Velocidade real: </h4>
+                            <div class="small font-weight-bold d-inline m-0">
+                              <div class="d-inline" id="velReal"></div> km/h
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <h4 class="small font-weight-bold m-0">Velocidade da missão: </h4>
+
+                            <div class="small font-weight-bold d-inline m-0">
+                              <div id="velMissao" class="d-inline"></div> km/h
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <h4 class="small font-weight-bold m-0">Código de erros: </h4>
+                            <div id="codErros" class="small font-weight-bold m-0"></div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <h4 class="small font-weight-bold m-0">Código de falhas: </h4>
+                            <div id="codFalha" class="small font-weight-bold m-0"></div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <h4 class="small font-weight-bold m-0"> Nível de diesel: </h4>
+
+                            <div class="small d-inline font-weight-bold m-0">
+                              <div id="nivelDiesel" class="d-inline"></div> %
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <h4 class="small font-weight-bold m-0"> Pressão dos pneus: </h4>
+
+                            <div class="small d-inline font-weight-bold m-0">
+                              <div id="pressaoPneus" class="d-inline"></div> PSI
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <h4 class="small font-weight-bold m-0"> Missão: </h4>
+                            <div id="missao" class="small font-weight-bold m-0"></div>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+
+
                   <!-- Project Card Example -->
                   <div class="card shadow mb-1">
                     <div class="card-header py-3 text-center">
@@ -279,6 +356,7 @@
 
             <!-- Pie Chart -->
             <div class="col-xs-12  col-sm-12 col-md-3 col-lg-3" style="font-size:larger;">
+
               <div class="card shadow mb-1">
                 <div class="card-body h-100">
                   <ul class="list-group overflow-auto">
@@ -309,76 +387,114 @@
                   </ul>
                 </div>
               </div>
-              <!-- Project Card Example -->
-              <div class="card shadow ">
-                <div class="card-header py-3 text-center">
-                  <h5 class="m-0 font-weight-bold text-success">Status do veículo</h5>
-                </div>
-                <div class="card-body">
-                  <table class="table table-borderless text-center m-0">
-                    <tr>
-                      <td>
-                        <h4 class="small font-weight-bold m-0">Status báscula: </h4>
-                        <div id="statusBasc" class="small font-weight-bold m-0"></div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <h4 class="small font-weight-bold m-0">Velocidade real: </h4>
-                        <div class="small font-weight-bold d-inline m-0">
-                          <div class="d-inline" id="velReal"></div> km/h
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <h4 class="small font-weight-bold m-0">Velocidade da missão: </h4>
 
-                        <div class="small font-weight-bold d-inline m-0">
-                          <div id="velMissao" class="d-inline"></div> km/h
+              <!-- Colocar aqui! -->
+                  <div class="card shadow mb-0">
+                    <!-- Card Header - Dropdown -->
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                      <div class="ml-auto mr-auto">
+                        <h5 class="m-0 font-weight-bold text-success">Log de erros/falhas</h5>
+                      </div>
+                      <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
+                          aria-haspopup="true" aria-expanded="false">
+                          <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                          aria-labelledby="dropdownMenuLink">
+                          <div class="dropdown-header">Opções de ações no mapa:</div>
+                          <a class="dropdown-item" href="#">Ação</a>
+                          <div class="dropdown-divider"></div>
+                          <a class="dropdown-item" href="#">Outra ação</a>
                         </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <h4 class="small font-weight-bold m-0">Código de erros: </h4>
-                        <div id="codErros" class="small font-weight-bold m-0"></div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <h4 class="small font-weight-bold m-0">Código de falhas: </h4>
-                        <div id="codFalha" class="small font-weight-bold m-0"></div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <h4 class="small font-weight-bold m-0"> Nível de diesel: </h4>
+                      </div>
+                    </div>
+                    <!-- Card Body -->
+                    <div class="card-body">
+                      <div class="area-logs" id="area-logs">
+                        <table class="table table-borderless">
+                          <tbody>
+                            <tr>
+                              <td>Falha 24V</td>
+                              <td> <span class=" dotverde ml-2 mr-2"></span> </td>
+                            </tr>
+                            <tr>
+                              <td>Controle Velocidade Retardo</td>
+                              <td> <span class=" dotverde ml-2 mr-2"></span> </td>
+                            </tr>
+                            <tr>
+                              <td>Stop Engine</td>
+                              <td> <span class=" dotverde ml-2 mr-2"></span> </td>
+                            </tr>
+                            <tr>
+                              <td>Freio Dinâmico</td>
+                              <td> <span class=" dotverde ml-2 mr-2"></span> </td>
+                            </tr>
+                            <tr>
+                              <td>Báscula Aberta</td>
+                              <td> <span class=" dotverde ml-2 mr-2"></span> </td>
+                            </tr>
+                            <tr>
+                              <td>Service Engine</td>
+                              <td> <span class=" dotverde ml-2 mr-2"></span> </td>
+                            </tr>
 
-                        <div class="small d-inline font-weight-bold m-0">
-                          <div id="nivelDiesel" class="d-inline"></div> %
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <h4 class="small font-weight-bold m-0"> Pressão dos pneus: </h4>
+                            <tr>
+                              <td>Blower</td>
+                              <td> <span class=" dotverde ml-2 mr-2"></span> </td>
+                            </tr>
+                            <tr>
+                              <td>Temperatura do Motor</td>
+                              <td> <span class=" dotverde ml-2 mr-2"></span> </td>
+                            </tr>
 
-                        <div class="small d-inline font-weight-bold m-0">
-                          <div id="pressaoPneus" class="d-inline"></div> PSI
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <h4 class="small font-weight-bold m-0"> Missão: </h4>
-                        <div id="missao" class="small font-weight-bold m-0"></div>
-                      </td>
-                    </tr>
-                  </table>
-                </div>
-              </div>
+                            <tr>
+                              <td>Check Engine</td>
+                              <td> <span class=" dotverde ml-2 mr-2"></span> </td>
+                            </tr>
+                            <tr>
+                              <td>Baixa Pressão Freio</td>
+                              <td> <span class=" dotverde ml-2 mr-2"></span> </td>
+                            </tr>
 
+                            <tr>
+                              <td>Elétrica</td>
+                              <td> <span class=" dotverde ml-2 mr-2"></span> </td>
+                            </tr>
+                            <tr>
+                              <td>Baixa Pressão Direção</td>
+                              <td> <span class=" dotverde ml-2 mr-2"></span> </td>
+                            </tr>
+
+                            <tr>
+                              <td>Alta Temperatura Óleo Hidráulico</td>
+                              <td> <span class=" dotverde ml-2 mr-2"></span> </td>
+                            </tr>
+                            <tr>
+                              <td>Freio de Serviço</td>
+                              <td> <span class=" dotverde ml-2 mr-2"></span> </td>
+                            </tr>
+
+                            <tr>
+                              <td>Freio Estacionamento</td>
+                              <td> <span class=" dotverde ml-2 mr-2"></span> </td>
+                            </tr>
+                            <tr>
+                              <td>Circuito Freio</td>
+                              <td> <span class=" dotverde ml-2 mr-2"></span> </td>
+                            </tr>
+
+                            <tr>
+                              <td>Baixo Nível Hidráulico</td>
+                              <td> <span class=" dotverde ml-2 mr-2"></span> </td>
+                            </tr>
+                          </tbody>
+                        </table>
+
+
+                      </div>
+                    </div>
+                  </div>
 
 
             </div>
@@ -435,6 +551,35 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modalDt" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Intervalo das mensagens </h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                  <table class="table table-borderless">
+                    <tbody>
+                      <tr>
+                        <td>Escolha o novo passo temporal (segundos)</td>
+                        <td> <input type="number" name="deltaT" id="deltaT" min="1" max="15"> </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <button class="btn btn-success" type="button" data-dismiss="modal" onclick="changeDt()">Mudar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
   <script type="text/javascript">
 

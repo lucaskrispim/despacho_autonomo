@@ -12,20 +12,20 @@ router.post('/logar', async (req, res) => {
     const verify = await userService.verifyUser(req);
     if (verify.flag) {
       const truck = await truckservice.getAllTruck();
-      res.cookie('token',verify.token,{maxAge: 60000, httpOnly: true }).render('home.html', { name: verify.name, adm: verify.adm, truck: truck });
+      res.cookie('token', verify.token, { maxAge: 60000, httpOnly: true }).render('home.html', { name: verify.name, adm: verify.adm, truck: truck });
     } else {
-      res.cookie('token', '', {maxAge: 1, httpOnly: true }).render('login.html', { validacao: [{ msg: verify.msg }] });
+      res.cookie('token', '', { maxAge: 1, httpOnly: true }).render('login.html', { validacao: [{ msg: verify.msg }] });
     }
   } catch (err) {
-    res.cookie('token', '', {maxAge: 1, httpOnly: true }).render('login.html', { validacao: [{ msg: 'Ocorreu algum problema, tente novamente mais tarde!' }] });
+    res.cookie('token', '', { maxAge: 1, httpOnly: true }).render('login.html', { validacao: [{ msg: 'Ocorreu algum problema, tente novamente mais tarde!' }] });
   }
 });
 
 router.post('/logout', async (req, res) => {
   try {
-    res.cookie('token', '', {maxAge: 1, httpOnly: true }).render('login.html', { validacao: [] });
+    res.cookie('token', '', { maxAge: 1, httpOnly: true }).render('login.html', { validacao: [] });
   } catch (err) {
-    res.cookie('token', '', {maxAge: 1, httpOnly: true }).render('login.html', { validacao: [{ msg: 'Ocorreu algum problema, tente novamente mais tarde!' }] });
+    res.cookie('token', '', { maxAge: 1, httpOnly: true }).render('login.html', { validacao: [{ msg: 'Ocorreu algum problema, tente novamente mais tarde!' }] });
   }
 });
 

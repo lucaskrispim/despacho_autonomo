@@ -1,9 +1,20 @@
 var socket = io();
+var truckPin;
 
 socket.on('msgParaCliente', (data) => {
   if (data && data.length > 0) {
     deleteTruck();
     insertTruck(data[data.length - 1].placa, data[data.length - 1].latitude, data[data.length - 1].longitude);
+    if(data[data.length - 1].velReal){
+      document.getElementById('velReal').innerHTML = '';
+      document.getElementById('velReal').innerHTML = data[data.length - 1].velReal;
+
+      document.getElementById('statusBasc').innerHTML = '';
+      document.getElementById('statusBasc').innerHTML = data[data.length - 1].statusBasc;
+
+    }
+    let numbers = data[0].createdAt.match(/[+]?\d+(?:\.\d+)?/g).map(Number);
+      console.log('ano',numbers[0],'mes',numbers[1],' dia ',numbers[2],' hora ',numbers[3],' minutos ',numbers[4],' Segundos ',numbers[5] );
     for (let i = 0; i < data.length; i++) {
       addc(data[i].latitude, data[i].longitude, data[i].placa);
     }
@@ -12,6 +23,20 @@ socket.on('msgParaCliente', (data) => {
 
 function iniciarMissao() {
   socket.emit('msgParaServidor', { msg: 'mission 1' });
+}
+
+function pararMissao() {
+  document.getElementById('iniciarMissaoBtn').innerHTML = '';
+  document.getElementById('iniciarMissaoBtn').innerHTML = 'Continuar missão';
+  socket.emit('msgParaServidor', { msg: 'stop mission' });
+}
+
+function voltar() {
+  socket.emit('msgParaServidor', { msg: 'go home' });
+}
+
+function changeDt(){
+  socket.emit('msgParaServidor', { msg: 'change dt', dt: document.getElementById('deltaT').value });
 }
 
 function degreesToRadians(degrees) {
@@ -125,19 +150,20 @@ function loadMapScenario() {
   });
   enviaMsg();
   retiraPonto();
-  insertBuldozer({ latitude: -1.295543, longitude: -45.755661 });
-  insertWareHouse({ latitude: -1.295543, longitude: -45.762 });
+  
+  insertBuldozer({ latitude: -1.2885924819211994, longitude: -45.75902985452271 });
+  insertWareHouse({ latitude: -1.3006486153353336, longitude: -45.75246380685425 });
 }
 
 function insertTruck(placa, x, y) {
   let loc = new Microsoft.Maps.Location(x, y);
-  let pin = new Microsoft.Maps.Pushpin(loc, {
+  truckPin = new Microsoft.Maps.Pushpin(loc, {
     icon: '/static/img/truck_icon.svg',
     title: placa,
     anchor: new Microsoft.Maps.Point(2, 2)
   });
   //Add the pushpin to the map
-  map.entities.push(pin);
+  map.entities.push(truckPin);
 }
 
 function insertBuldozer(p1) {
@@ -166,6 +192,7 @@ function insertWareHouse(p1) {
 
   //Add the pushpin to the map
   map.entities.push(pin);
+
 }
 
 function selecionaPlaca() {
@@ -186,10 +213,9 @@ function selecionaPlaca() {
   }
 }
 function deleteTruck() {
-  const i = map.entities.getLength() - 2;
-  const pushpin = map.entities.get(i);
-  if (pushpin instanceof Microsoft.Maps.Pushpin) {
-    map.entities.removeAt(i);
+  if (truckPin && truckPin instanceof Microsoft.Maps.Pushpin) {
+    //map.entities.removeAt(i);
+    map.entities.remove(truckPin);
   }
 }
 
