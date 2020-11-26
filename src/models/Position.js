@@ -1,5 +1,5 @@
 const {Model,DataTypes} = require('sequelize');
-const { STRING, FLOAT, UUIDV4, BOOLEAN } = require('sequelize');
+const { STRING, FLOAT, UUIDV4, BOOLEAN, DATE } = require('sequelize');
 
 class Position extends Model{
     static init(connection){
@@ -10,10 +10,14 @@ class Position extends Model{
             latitude:DataTypes.FLOAT,
             longitude:DataTypes.FLOAT,
             cloud:DataTypes.BOOLEAN,
+            createdAt: { type: DataTypes.DATE, field: 'created_at' },
+            updatedAt: { type: DataTypes.DATE, field: 'updated_at' },
         },{
             tableName: 'position', 
             freezeTableName: true,
             sequelize:connection,
+            createdAt: 'createdAt',
+            updatedAt: 'updatedAt',
         })
     }
     static associate(models){

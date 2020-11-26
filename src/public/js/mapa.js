@@ -5,7 +5,7 @@ socket.on('msgParaCliente', (data) => {
   if (data && data.length > 0) {
     deleteTruck();
     insertTruck(data[data.length - 1].placa, data[data.length - 1].latitude, data[data.length - 1].longitude);
-    if(data[data.length - 1].velReal){
+    if (data[data.length - 1].velReal) {
       document.getElementById('velReal').innerHTML = '';
       document.getElementById('velReal').innerHTML = data[data.length - 1].velReal;
 
@@ -13,16 +13,94 @@ socket.on('msgParaCliente', (data) => {
       document.getElementById('statusBasc').innerHTML = data[data.length - 1].statusBasc;
 
     }
-    let numbers = data[0].createdAt.match(/[+]?\d+(?:\.\d+)?/g).map(Number);
-      console.log('ano',numbers[0],'mes',numbers[1],' dia ',numbers[2],' hora ',numbers[3],' minutos ',numbers[4],' Segundos ',numbers[5] );
+
     for (let i = 0; i < data.length; i++) {
-      addc(data[i].latitude, data[i].longitude, data[i].placa);
+      //let numbers = data[i].createdAt.match(/[+]?\d+(?:\.\d+)?/g).map(Number);
+      var d = new Date(data[i].createdAt);
+      addc(data[i].latitude, data[i].longitude, data[i].placa, d);
     }
+    //preencheAno();
   }
 });
 
+function selecionaData() {
+  if (document.getElementById('dataInicio').value && document.getElementById('dataFim').value) {
+    retiraPonto();
+    let dInicio = new Date(document.getElementById('dataInicio').value);
+    let dFim = new Date(document.getElementById('dataFim').value);
+    dados = vet2.filter(function (obj) {
+      return obj.data >= dInicio && obj.data <= dFim;
+    });
+    for (let i = 0; i < dados.length; i++) {
+      let loc = new Microsoft.Maps.Location(dados[i].latitude, dados[i].longitude);
+      let pl = vet.findIndex(obj => obj.placa == dados[i].placa);
+      let pin1 = createCirclePushpin(loc, raio, 'rgb(' + vet[pl].n1 + ',' + vet[pl].n2 + ',' + vet[pl].n3 + ')');
+      map.entities.push(pin1);
+    }
+
+  } else if (!document.getElementById('dataInicio').value && !document.getElementById('dataFim').value) {
+    for (let i = 0; i < vet2.length; i++) {
+      let loc = new Microsoft.Maps.Location(vet2[i].latitude, vet2[i].longitude);
+      let pl = vet.findIndex(obj => obj.placa == vet2[i].placa);
+      let pin1 = createCirclePushpin(loc, raio, 'rgb(' + vet[pl].n1 + ',' + vet[pl].n2 + ',' + vet[pl].n3 + ')');
+      map.entities.push(pin1);
+    }
+  }
+}
+
+/*
+function preencheAno() {
+  if (document.getElementById("selectAno")) {
+    let y = document.getElementById("selectAno");
+
+    while (y.length > 1) {
+      y.remove(y.length - 1);
+    }
+    uniqueYear = [...new Set(vet2.map(item => item.ano))];
+    for (let i = 0; i < uniqueYear.length; i++) {
+      let x = document.getElementById("selectAno");
+      let option = document.createElement("option");
+      option.text = uniqueYear[i];
+      x.add(option);
+    }
+  }
+}
+
+function selecionaMes() {
+  let y = document.getElementById("selectMes");
+  while (y.length > 1) {
+    y.remove(y.length - 1);
+  }
+  let meses = vet2.filter(function (obj) {
+    return obj.ano == document.getElementById('selectAno').value;
+  });
+  for (let i = 0; i < meses.length; i++) {
+    let x = document.getElementById("selectMes");
+    let option = document.createElement("option");
+    option.text = meses[i].mes;
+    x.add(option);
+  }
+}
+
+function selecionaDia() {
+  let y = document.getElementById("selectDia");
+  while (y.length > 1) {
+    y.remove(y.length - 1);
+  }
+  let dias = vet2.filter(function (obj) {
+    return obj.ano == document.getElementById('selectAno').value &&  obj.mes == document.getElementById('selectMes').value;
+  });
+  for (let i = 0; i < dias.length; i++) {
+    let x = document.getElementById("selectDia");
+    let option = document.createElement("option");
+    option.text = dias[i].dia;
+    x.add(option);
+  }
+}
+*/
+
 function iniciarMissao() {
-  socket.emit('msgParaServidor', { msg: 'mission 1' });
+  socket.emit('msgParaServidor', { msg: 'mission 1', placa: document.getElementById('truck').value });
 }
 
 function pararMissao() {
@@ -35,7 +113,7 @@ function voltar() {
   socket.emit('msgParaServidor', { msg: 'go home' });
 }
 
-function changeDt(){
+function changeDt() {
   socket.emit('msgParaServidor', { msg: 'change dt', dt: document.getElementById('deltaT').value });
 }
 
@@ -142,6 +220,7 @@ function enviaMsg() {
 function loadMapScenario() {
   vet = [];
   vet2 = [];
+  dados = [];
   raio = 2;
   map = new Microsoft.Maps.Map(document.getElementById('myMap'), {
     center: new Microsoft.Maps.Location(-1.295543, -45.755661),
@@ -150,7 +229,7 @@ function loadMapScenario() {
   });
   enviaMsg();
   retiraPonto();
-  
+
   insertBuldozer({ latitude: -1.2885924819211994, longitude: -45.75902985452271 });
   insertWareHouse({ latitude: -1.3006486153353336, longitude: -45.75246380685425 });
 }
@@ -235,9 +314,9 @@ function selectPlaca(placa) {
   x.add(option);
 }
 
-function addc(x, y, placa) {
+function addc(x, y, placa, data) {
   let loc = new Microsoft.Maps.Location(x, y);
-  vet2.push({ placa: placa, latitude: x, longitude: y });
+  vet2.push({ placa: placa, latitude: x, longitude: y, data: data });
   if (vet.findIndex(obj => obj.placa == placa) == -1) {
     let n1 = (Math.floor(Math.random() * 256)).toString();
     let n2 = (Math.floor(Math.random() * 256)).toString();

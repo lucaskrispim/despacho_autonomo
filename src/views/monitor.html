@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
-  <script src="/static/socket.io/socket.io.js"></script> 
+  <script src="/static/socket.io/socket.io.js"></script>
 
   <title>Painel de comando</title>
 
@@ -142,35 +142,52 @@
         <div class="container-fluid">
           <!-- Content Row -->
           <div class="row">
-            <div class="col-xl-4 col-md-6 mb-0">
+            <div class="col-xl-2  mb-4">
               <button type="button" class="btn btn-light btn-block d-flex justify-content-center">
-                <div class="font-weight-bold" style="font-size:larger;"><%= truck%>
+                <div class="font-weight-bold" style="font-size:larger;"> <%= truck%>
                 </div>
                 <span class="dotverde ml-2 mr-2"></span>
                 <div class="ml-2 mr-2">
                   <img src="/static/img/signal-strength3.svg" alt="sinal" style="max-width: 25px;" />
                 </div>
-                <div class="ml-2 mr-2">
-                  | EH-4012 DEP. SUL
+              </button>
+            </div>
+            <div class="col-xl-1  mb-4">
+              <button type="button" class="btn btn-light btn-block d-flex justify-content-center">
+                <div class="font-weight-bold" style="font-size:larger;"> Início
                 </div>
               </button>
             </div>
-            <div class="col-xl-2 col-md-6 mb-0">
+            <div class="col-xl-3  mb-0">
               <div class="form-group">
-                <select class="form-control" id="exampleFormControlSelect1">
-                  <option>Dia atual</option>
-                  <option>2</option>
-                  <option>3</option>
-                  <option>4</option>
-                  <option>5</option>
-                </select>
+                <input class="form-control" type="datetime-local" id="dataInicio">
               </div>
             </div>
+            <div class="col-xl-1  mb-4">
+              <button type="button" class="btn btn-light btn-block d-flex justify-content-center">
+                <div class="font-weight-bold" style="font-size:larger;"> Fim
+                </div>
+              </button>
+            </div>
+            <div class="col-xl-3 mb-0">
+              <div class="form-group">
+                <input class="form-control" type="datetime-local" id="dataFim">
+              </div>
+            </div>
+            <div class="col-xl-2 mb-4">
+              <button type="button" class="btn btn-outline-success btn-block " onClick="selecionaData()">
+                <div id="iniciarMissaoBtn" class="font-weight-bold" style="font-size:larger;">Buscar</div>
+              </button>
+            </div>
+
           </div>
           <div class="row mb-4">
             <!-- Area Chart -->
             <div class="col-xs-12  col-sm-12 col-md-9 col-lg-9">
               <div class="card shadow mb-1">
+                <div class="card-header py-3 text-center">
+                  <h5 class="m-0 font-weight-bold text-success">EH-4012 DEP.SUL</h5>
+                </div>
                 <!-- Card Body -->
                 <div class="card-body">
                   <div class="chart-area">
@@ -178,6 +195,79 @@
                   </div>
                 </div>
               </div>
+
+
+              <div class="card shadow mb-0">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <div class="ml-auto mr-auto">
+                    <h5 class="m-0 font-weight-bold text-success"> Informações </h5>
+                  </div>
+                  <div class="dropdown no-arrow">
+                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
+                      aria-haspopup="true" aria-expanded="false">
+                      <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                      aria-labelledby="dropdownMenuLink">
+                      <div class="dropdown-header">Opções de ações no mapa:</div>
+                      <a class="dropdown-item" href="#">Ação</a>
+                      <div class="dropdown-divider"></div>
+                      <a class="dropdown-item" href="#">Outra ação</a>
+                    </div>
+                  </div>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                  <div class="area-logs" id="area-logs">
+
+                    <table class="table table-borderless">
+                      <tbody>
+                        <tr>
+                          <td><h5 class="m-0 font-weight-bold text-success">  info 1 </h5></td>
+                          <td><h5 class="m-0 font-weight-bold text-success">  info 2 </h5></td>
+                        </tr>
+
+                        <tr>
+                          <td>1</td>
+                          <td>2</td>
+                        </tr>
+
+                        <tr>
+                          <td><h5 class="m-0 font-weight-bold text-success">  info 3 </h5></td>
+                          <td><h5 class="m-0 font-weight-bold text-success">  info 4 </h5></td>
+                        </tr>
+
+                        <tr>
+                          <td>3</td>
+                          <td>4</td>
+                        </tr>
+                        <tr>
+                          <td><h5 class="m-0 font-weight-bold text-success">  info 5 </h5></td>
+                          <td><h5 class="m-0 font-weight-bold text-success">  info 6 </h5></td>
+                        </tr>
+
+                        <tr>
+                          <td>5</td>
+                          <td>6</td>
+                        </tr>
+                        <tr>
+                          <td><h5 class="m-0 font-weight-bold text-success">  info 7 </h5></td>
+                          <td><h5 class="m-0 font-weight-bold text-success">  info 8 </h5></td>
+                        </tr>
+
+                        <tr>
+                          <td>7</td>
+                          <td>8</td>
+                        </tr>
+
+                      </tbody>
+                    </table>
+
+                  </div>
+                </div>
+              </div>
+
             </div>
 
             <!-- Pie Chart -->

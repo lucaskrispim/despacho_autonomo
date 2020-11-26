@@ -21,6 +21,15 @@ class PositionService {
     }
   }
 
+  static async getOneByTruck(placa) {
+    try {
+      const position = await Position.findOne({ raw: true, where: { "placa": placa },order: [ [ 'createdAt', 'DESC' ]] });
+      return position;
+    } catch (error) {
+      return error;
+    }
+  }
+
   static async create(body) {
     try {
       const truck = await Truck.findOne({ where: { "placa": body.placa } });

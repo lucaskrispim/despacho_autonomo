@@ -33,18 +33,18 @@ server.listen(process.env.PORT || 2005, () => { // Escutar a porta 2005
 
 /*
 setInterval(async () => { // função que faz o espelhamento do banco de dados (está comentada porque estamos em teste)
-		try {
-			const {user, truck, position} = await databaseService.getLocal();
-			await databaseService.sendGlobal(user, truck, position);
-		} catch (err) {
-			console.log(err);
-		}
-	}, 30000);
+	try {
+		const { user, truck, position } = await databaseService.getLocal();
+		await databaseService.sendGlobal(user, truck, position);
+	} catch (err) {
+		console.log(err);
+	}
+}, 30000);
 */
 
 // Esse trecho é a comunicação com a porta serial
 
-const port = new SerialPort('/dev/pts/2', { baudRate: 9600 }); // porta serial de escuta
+const port = new SerialPort('/dev/pts/5', { baudRate: 9600 }); // porta serial de escuta
 
 // Analisador sintático - Leitura de dados 
 const parser_port = new Readline();
@@ -60,9 +60,11 @@ io.on('connection', (socket) => { // comunicação com socket
 		switch (data.msg) { // switch de mensagens para caminhão
 			case 'mission 1': // caso missão 1
 				if (msg.msg !== 'stop' && msg.msg !== 'go home') {
-					const mission = Path('14', '9'); // Calcula o melhor caminho na malha para o trecho 14/9
+					const lastPosition = await PositionService.getOneByTruck(data.placa);
+					const mission = new Path(lastPosition, { latitude: -1.2885924819211995, longitude: -45.75902985452271 });
+					
 					msg = { msg: 'go' }; // mensagem padrão de seguir
-					port.write(JSON.stringify(mission) + '\n'); // envia a missão
+					port.write(JSON.stringify(mission.getRoute()) + '\n'); // envia a missão
 				} else {
 					port.write(JSON.stringify({ msg: 'go' }) + '\n');
 					msg = { msg: 'go' };
@@ -81,7 +83,6 @@ io.on('connection', (socket) => { // comunicação com socket
 			default:
 				if (data && data.placa) { // mensagem em branco. Envia os dados guardados no banco para o front
 					const positions = await PositionService.getByTruck(data.placa); // pega os pontos do banco 
-					console.log(positions)
 					socket.emit('msgParaCliente', positions); // envia para o front
 				}
 				break;
@@ -103,7 +104,6 @@ parser_port.on('data', async (data) => { // recebe dados do caminhão e envia pa
 	response.dataValues.statusBasc = JSON.parse(data).statusBasc;
 	response.velReal = JSON.parse(data).velReal;
 	response.statusBasc = JSON.parse(data).statusBasc;
-	console.log(response);
 	io.emit('msgParaCliente', [response]); // envia para o front
 	port.write(JSON.stringify(msg) + '\n'); // envia uma mensagem padrão para o caminhão (ir/voltar/parar)
 });
